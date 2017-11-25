@@ -70,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
                 // 重置MediaPlayer,避免开启多个播放线程
                 if (MP != null) {
                     MP.reset();
+                    CurrentTime = 0;
+                    IsPause = true;
                 }
                 // 设置/初始化MediaPlayer
                 setMediaPlayer();
@@ -77,10 +79,13 @@ public class MainActivity extends AppCompatActivity {
                 MP.start();
                 // 设置释放停止播放状态为 false
                 IsPause = false;
-                // 判断时间监听线程是否为空，是则开启播放时间时间监听
-                if (GetTimeThread == null){
-                    getTime();
-                }
+
+                // 是则开启播放时间时间监听
+                getTime();
+
+
+                Pause.setEnabled(true);
+                Stop.setEnabled(true);
             }
         });
 
@@ -93,7 +98,10 @@ public class MainActivity extends AppCompatActivity {
                 if (MP.isPlaying()){
                     MP.stop();
                     MP.release();
+                    MP = null;
                 }
+                Pause.setEnabled(false);
+                Stop.setEnabled(false);
             }
         });
 
@@ -101,7 +109,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-
+                if (MP == null) {
+                    return;
+                }
                 // 是否已暂停播放，是则继续从上次停止的时间开始播放，否则暂停播放
                 if (IsPause){
                     MP.seekTo(CurrentTime);
@@ -113,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 // 播放状态取反
                 IsPause = !IsPause;
+
             }
         });
     }
